@@ -27,9 +27,11 @@ blank reminder page instead:
 ## Editing the block list
 
 Open [`config.js`](./config.js) and edit `BLOCKED_DOMAINS`. A domain matches all
-of its subdomains, so `reddit.com` also covers `www.reddit.com`. You can also
-change `WINDOW_HOURS` (e.g. `2` or `6`) — windows always stay anchored to
-midnight.
+of its subdomains, so `reddit.com` also covers `www.reddit.com`. Group domains
+in an array to make them **aliases** that share one visit —
+`["gmail.com", "mail.google.com"]` treats both as the same site, so opening
+either one spends the window for both. You can also change `WINDOW_HOURS`
+(e.g. `2` or `6`) — windows always stay anchored to midnight.
 
 ## Install (unpacked)
 

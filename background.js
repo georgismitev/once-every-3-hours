@@ -1,4 +1,4 @@
-import { BLOCKED_DOMAINS, WINDOW_HOURS } from "./config.js";
+import { blockedGroups, WINDOW_HOURS } from "./config.js";
 
 // The reminder page shown when a site is locked.
 const FOCUS_PAGE = chrome.runtime.getURL("blocked.html");
@@ -13,14 +13,16 @@ function hostOf(url) {
   }
 }
 
-// Returns the blocked domain that this http(s) url belongs to, or null.
-// A domain also matches its subdomains (reddit.com ⇒ www.reddit.com).
+// Returns the canonical key of the blocked group this http(s) url belongs to,
+// or null. A domain also matches its subdomains (reddit.com ⇒ www.reddit.com),
+// and every alias in a group resolves to the same key so they share a visit.
 function matchedDomain(url) {
   if (!url || !/^https?:/i.test(url)) return null;
   const host = hostOf(url);
-  for (const raw of BLOCKED_DOMAINS) {
-    const d = raw.toLowerCase();
-    if (host === d || host.endsWith("." + d)) return d;
+  for (const { key, domains } of blockedGroups()) {
+    for (const d of domains) {
+      if (host === d || host.endsWith("." + d)) return key;
+    }
   }
   return null;
 }

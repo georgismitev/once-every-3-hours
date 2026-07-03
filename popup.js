@@ -1,4 +1,4 @@
-import { BLOCKED_DOMAINS, WINDOW_HOURS } from "./config.js";
+import { blockedGroups, WINDOW_HOURS } from "./config.js";
 
 function currentWindowKey(now = new Date()) {
   const y = now.getFullYear();
@@ -27,13 +27,13 @@ async function render() {
   const list = document.getElementById("list");
   list.replaceChildren();
 
-  for (const domain of BLOCKED_DOMAINS) {
+  for (const { key, domains } of blockedGroups()) {
     let state = "available";
     let label = "available";
-    if (sessions[domain]?.window === wk) {
+    if (sessions[key]?.window === wk) {
       state = "open";
       label = "in a visit";
-    } else if (used[domain] === wk) {
+    } else if (used[key] === wk) {
       state = "locked";
       label = `locked · ${next}`;
     }
@@ -42,7 +42,7 @@ async function render() {
     row.className = "row";
     const name = document.createElement("span");
     name.className = "name";
-    name.textContent = domain;
+    name.textContent = domains.join(" · ");
     const tag = document.createElement("span");
     tag.className = `tag ${state}`;
     tag.textContent = label;
