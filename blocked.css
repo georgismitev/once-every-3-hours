@@ -1,0 +1,55 @@
+/* Same warm paper and book serif as the "blank" new-tab extension. */
+
+/* Literata — variable, SIL Open Font License 1.1.
+   A warm, sturdy book serif tuned for on-screen reading. */
+@font-face {
+  font-family: "Literata";
+  font-style: normal;
+  font-weight: 200 900;
+  font-display: swap;
+  src: url("fonts/Literata.woff2") format("woff2");
+}
+
+:root {
+  /* Claude's --bg-100 and --text-000 */
+  --bg: #f8f8f6;
+  --fg: #121212;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  font-family: "Literata", Georgia, "Times New Roman", Times, serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+  font-feature-settings: "kern", "liga", "onum";
+}
+
+#message {
+  max-width: 32rem;
+}
+
+.line {
+  font-size: clamp(1.8rem, 5vw, 2.75rem);
+  line-height: 1.35;
+  letter-spacing: -0.01em;
+}
+
+.line.dim {
+  opacity: 0.5;
+}

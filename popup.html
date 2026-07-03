@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Once Every 3 Hours</title>
+  <style>
+    /* Same warm paper and Literata serif as the "blank" extension. */
+    @font-face {
+      font-family: "Literata";
+      font-style: normal;
+      font-weight: 200 900;
+      font-display: swap;
+      src: url("fonts/Literata.woff2") format("woff2");
+    }
+
+    :root {
+      /* Claude's --bg-100 and --text-000 */
+      --bg: #f8f8f6;
+      --fg: #121212;
+    }
+
+    * { margin: 0; box-sizing: border-box; }
+
+    body {
+      width: 268px;
+      padding: 16px 18px;
+      background: var(--bg);
+      color: var(--fg);
+      font-family: "Literata", Georgia, "Times New Roman", Times, serif;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+      font-feature-settings: "kern", "liga", "onum";
+    }
+
+    h1 { font-size: 1.15rem; font-weight: 500; margin-bottom: 12px; }
+
+    .row {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 4px 0;
+      font-size: 0.9rem;
+    }
+    .name { opacity: 0.85; }
+    .tag { font-size: 0.78rem; white-space: nowrap; }
+    .tag.available { opacity: 0.35; }
+    .tag.open { opacity: 0.9; }
+    .tag.locked { opacity: 0.55; }
+  </style>
+</head>
+<body>
+  <h1>Once every 3 hours</h1>
+  <div id="list"></div>
+  <script src="popup.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,14 @@
+<svg width="128" height="128" viewBox="0 0 128 128" xmlns="http://www.w3.org/2000/svg">
+  <!-- Warm paper tile, matching the "blank" aesthetic -->
+  <rect x="4" y="4" width="120" height="120" rx="26" fill="#f8f8f6"/>
+  <rect x="4.5" y="4.5" width="119" height="119" rx="25.5" fill="none" stroke="#121212" stroke-opacity="0.08" stroke-width="1"/>
+
+  <!-- Clock dial -->
+  <circle cx="64" cy="64" r="40" fill="none" stroke="#121212" stroke-width="7"/>
+
+  <!-- One 3-hour window: the 12 -> 3 quarter, filled in ink -->
+  <path d="M64 64 L64 24 A40 40 0 0 1 104 64 Z" fill="#121212"/>
+
+  <!-- Hub -->
+  <circle cx="64" cy="64" r="6" fill="#121212"/>
+</svg>
