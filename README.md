@@ -48,8 +48,8 @@ midnight.
 | `background.js` | Service worker — per-site window logic and locking |
 | `blocked.html` / `blocked.css` | The Focus reminder page |
 | `popup.html` / `popup.js` | Toolbar status popup |
-| `fonts/` | Bundled Literata (SIL OFL 1.1), same face `blank` uses |
+| `fonts/` | Bundled Literata (SIL OFL 1.1), same face [`blank`](https://github.com/georgismitev/blank) uses |
 | `icons/` | Toolbar icon (paper tile + 3-hour clock wedge) |
 
-The Focus page and popup share `blank`'s exact look: the warm `#f8f8f6` paper,
+The Focus page and popup share [`blank`](https://github.com/georgismitev/blank)'s exact look: the warm `#f8f8f6` paper,
 `#121212` ink, and the bundled **Literata** book serif.
