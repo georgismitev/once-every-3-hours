@@ -46,6 +46,51 @@ function getState() {
   return chrome.storage.local.get({ used: {}, sessions: {} });
 }
 
+// Bring persisted state in line with reality. Runs before every decision and
+// whenever the worker wakes, so a window boundary or a browser that didn't
+// close cleanly can't leave stale state behind.
+//   1. Clean slate each window: drop anything not tagged with this window.
+//   2. Heal orphans: a same-window session keeps only tabs that still exist and
+//      are still on the site. If none survive the visit is over — the worker
+//      may have slept through the tab closing, so onRemoved never fired.
+async function pruneState() {
+  const wk = currentWindowKey();
+  const liveTab = new Map((await chrome.tabs.query({})).map((t) => [t.id, t]));
+  const { used, sessions } = await getState();
+  let changed = false;
+
+  for (const domain of Object.keys(used)) {
+    if (used[domain] !== wk) {
+      delete used[domain];
+      changed = true;
+    }
+  }
+
+  for (const domain of Object.keys(sessions)) {
+    const sess = sessions[domain];
+    if (sess.window !== wk) {
+      delete sessions[domain]; // earlier window → clean slate, fresh visit later
+      changed = true;
+      continue;
+    }
+    const live = sess.tabs.filter((id) => {
+      const t = liveTab.get(id);
+      return t && matchedDomain(t.url) === domain;
+    });
+    if (live.length === sess.tabs.length) continue;
+    changed = true;
+    if (live.length === 0) {
+      console.log(`[3h] heal — ${domain} visit orphaned, tabs gone → locking`);
+      used[domain] = wk;
+      delete sessions[domain];
+    } else {
+      sess.tabs = live;
+    }
+  }
+
+  if (changed) await chrome.storage.local.set({ used, sessions });
+}
+
 async function redirectToFocus(tabId) {
   try {
     await chrome.tabs.update(tabId, { url: FOCUS_PAGE });
@@ -59,25 +104,21 @@ async function handleBlockedNavigation(tabId, url) {
   const domain = matchedDomain(url);
   if (!domain) return;
 
+  // Reconcile first, so any prior-window or orphaned session is already gone.
+  await pruneState();
+
   const wk = currentWindowKey();
   const { used, sessions } = await getState();
-  const sess = sessions[domain];
+  const sess = sessions[domain]; // pruneState guarantees this is the current window
 
   // Already inside this domain's visit for this window → allow, track the tab.
-  if (sess && sess.window === wk) {
+  if (sess) {
     if (!sess.tabs.includes(tabId)) {
       sess.tabs.push(tabId);
       await chrome.storage.local.set({ sessions });
     }
     console.log(`[3h] allow — ${domain} visit in progress`);
     return;
-  }
-
-  // A visit from an earlier window is still open (tab left up across a
-  // boundary). Close it out; that window's visit is now spent.
-  if (sess && sess.window !== wk) {
-    used[domain] = sess.window;
-    delete sessions[domain];
   }
 
   if (used[domain] === wk) {
@@ -136,3 +177,9 @@ chrome.webNavigation.onCommitted.addListener((details) => {
 chrome.tabs.onRemoved.addListener((tabId) => {
   releaseTab(tabId);
 });
+
+// Self-heal on every worker wake and browser start: if the worker slept through
+// a window boundary or the browser didn't close cleanly, stale state is cleared
+// before it can affect a decision.
+chrome.runtime.onStartup.addListener(pruneState);
+pruneState();
